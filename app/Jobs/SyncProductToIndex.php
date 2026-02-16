@@ -8,18 +8,19 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class SyncProductToIndex implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public Product|int $product;
+    public Product|int|string $product;
     public string $action;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(Product|int $product, string $action = 'index')
+    public function __construct(Product|int|string $product, string $action = 'index')
     {
         $this->product = $product;
         $this->action = $action;

@@ -57,3 +57,33 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Testing notes (project-specific)
+
+- Unit tests: placed under `tests/Unit` and use mocked `ProductRepositoryInterface` to exercise controller logic without external services.
+- Feature tests: placed under `tests/Feature` and use SQLite in-memory (`RefreshDatabase`) for speed. This satisfies the exercise requirement and keeps CI fast.
+- Elasticsearch: feature tests mock the `ElasticsearchService` so they don't require a running ES instance. If you need end-to-end verification against a real Elasticsearch, run the stack via Docker Compose and execute the integration test described below.
+
+Running tests
+
+Inside the project (or inside the `app` container):
+
+```bash
+# run all tests
+php artisan test
+
+# run only unit tests
+php artisan test --testsuite=Unit
+
+# run the ProductApiTest feature
+php artisan test --filter ProductApiTest
+```
+
+End-to-end integration (MySQL + Elasticsearch)
+
+1. Start the Docker stack: `docker compose up -d --build`
+2. Run migrations against MySQL: `docker compose exec app php artisan migrate --force`
+3. (Optional) Seed: `docker compose exec app php artisan db:seed --class=DatabaseSeeder --force`
+4. Run integration tests (example): `docker compose exec app php artisan test --filter Integration` (you'll need to add integration tests in `tests/Feature` that do not mock `ElasticsearchService`).
+
+Justification: using SQLite in-memory for tests keeps them fast and deterministic; the README documents how to run full integration tests when required.

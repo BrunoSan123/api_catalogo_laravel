@@ -1,0 +1,1 @@
+{ "properties": { "created_at": { "type": "text", "fielddata": true } } }
