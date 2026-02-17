@@ -1,55 +1,5 @@
 ## Testing notes (project-specific)
 
-- Unit tests: placed under `tests/Unit` and use mocked `ProductRepositoryInterface` to exercise controller logic without external services.
-- Feature tests: placed under `tests/Feature` and use SQLite in-memory (`RefreshDatabase`) for speed. This satisfies the exercise requirement and keeps CI fast.
-- Elasticsearch: feature tests mock the `ElasticsearchService` so they don't require a running ES instance. If you need end-to-end verification against a real Elasticsearch, run the stack via Docker Compose and execute the integration test described below.
-
-Running tests
-
-Inside the project (or inside the `app` container):
-
-```bash
-# run all tests
-php artisan test
-
-# run only unit tests
-# Project README
-
-Este repositório contém uma API de exemplo para gerenciamento de `Product` (CRUD) com integração opcional ao Elasticsearch.
-
-O README foi simplificado para focar na execução do projeto, rotas expostas e exemplos de requisição — informações genéricas sobre Laravel foram removidas.
-
-## Quick start (Docker)
-
-Requisitos: `docker` e `docker-compose`.
-
-# README do Projeto (em Português)
-
-Este repositório contém uma API de gerenciamento de produtos (CRUD) com integração opcional ao Elasticsearch.
-
-Este README explica em detalhe como executar o sistema localmente usando Docker, quais dependências são necessárias e fornece exemplos de requisições para todas as rotas.
-
----
-
-## Pré-requisitos
-
-- Docker (versão recente)
-- Docker Compose
-- Opcional: Git, PHP 8.4+ e Composer se preferir executar localmente sem Docker
-
-Observação: em ambientes Windows/WSL é comum encontrar problemas ao montar diretórios do host dentro do container (especialmente com a pasta `vendor`). Veja a seção de Troubleshooting abaixo.
-
----
-
-## Instruções rápidas (Docker)
-
-1) A partir da raiz do repositório (opção 1):
-
-```bash
-docker-compose -f teste_app/docker-compose.yml up -d --build
-```
-
-2) Ou a partir da pasta `teste_app` (opção 2):
 
 ```bash
 cd teste_app
