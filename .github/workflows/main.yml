@@ -23,6 +23,6 @@ jobs:
 
             docker-compose down
             docker-compose build --no-cache
-            docker-composer up -d
+            docker-compose up -d
 
             docker system prune -f
