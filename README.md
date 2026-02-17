@@ -8,20 +8,20 @@ docker-compose up -d --build
 
 Esses comandos irão criar os serviços: `app` (PHP-FPM), `nginx`, `mysql`, `redis`, `elasticsearch`, `kibana`, `adminer`.
 
-3) Após os containers subirem, execute migrações e seeders (no mesmo diretório do `docker-compose.yml` usado):
+Após os containers subirem, execute migrações e seeders (no mesmo diretório do `docker-compose.yml` usado):
 
 ```bash
 docker-compose exec app php artisan migrate --force
 docker-compose exec app php artisan db:seed --class=DatabaseSeeder --force
 ```
 
-4) Se `vendor` não estiver presente no container, instale dependências:
+Se `vendor` não estiver presente no container, instale dependências:
 
 ```bash
 docker-compose exec app bash -lc "composer install --no-interaction --prefer-dist --optimize-autoloader"
 ```
 
-5) Verifique status dos containers:
+ Verifique status dos containers:
 
 ```bash
 docker ps
