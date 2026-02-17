@@ -24,6 +24,18 @@ class ProductApiTest extends TestCase
         $response->assertJsonValidationErrors(['sku', 'name', 'price']);
     }
 
+    protected function uploadProductImage(\App\Models\Product $product, ?\Illuminate\Http\UploadedFile $file = null)
+    {
+        // ensure S3 disk is faked here so S3 is only used by this helper
+        \Illuminate\Support\Facades\Storage::fake('s3');
+
+        $file = $file ?? \Illuminate\Http\UploadedFile::fake()->image('pic.jpg');
+
+        return $this->postJson("/api/products/{$product->id}/image", [
+            'image' => $file,
+        ]);
+    }
+
     public function test_create_product_success(): void
     {
         Storage::fake('s3');
@@ -36,13 +48,14 @@ class ProductApiTest extends TestCase
             'price' => 9.99,
             'category' => 'books',
             'status' => 'active',
-            'image_path' => $file,
         ];
 
         $response = $this->postJson('/api/products', $payload);
 
         $response->assertStatus(201);
         $response->assertJsonFragment(['sku' => 'SKU123', 'name' => 'Test product']);
+
+        $data = $response->json();
 
         $this->assertDatabaseHas('products', ['sku' => 'SKU123']);
     }
@@ -112,5 +125,34 @@ class ProductApiTest extends TestCase
         $response = $this->getJson('/api/search/products?q=Search&category=books&status=active');
         $response->assertStatus(200);
         $response->assertJsonFragment(['sku' => 'S1']);
+    }
+
+    public function test_upload_image_for_product_stores_file_and_updates_model()
+    {
+        Storage::fake('s3');
+
+        $product = Product::create([
+            'sku' => 'IMG1',
+            'name' => 'Image Product',
+            'price' => 1.23,
+            'category' => 'cat',
+            'status' => 'active',
+        ]);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('pic.jpg');
+
+        $response = $this->uploadProductImage($product, $file);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['sku' => 'IMG1']);
+
+        $data = $response->json();
+        $this->assertArrayHasKey('image_path', $data);
+
+        $product->refresh();
+        $this->assertNotNull($product->image_path);
+        $this->assertEquals($product->image_path, $data['image_path']);
+        $this->assertStringStartsWith('products/', $data['image_path']);
+        Storage::disk('s3')->assertExists($data['image_path']);
     }
 }

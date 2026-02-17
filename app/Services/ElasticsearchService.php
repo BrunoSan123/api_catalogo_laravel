@@ -50,21 +50,23 @@ class ElasticsearchService
     {
         $body = ['query' => ['bool' => ['must' => []]]];
 
+        // Full-text query: include name, description and sku
         if (! empty($params['q'])) {
             $body['query']['bool']['must'][] = [
                 'multi_match' => [
                     'query' => $params['q'],
-                    'fields' => ['name^2', 'description'],
+                    'fields' => ['name^2', 'description', 'sku'],
                 ],
             ];
         }
 
+        // Exact term filters: prefer .keyword fields when mapping uses text
         if (! empty($params['category'])) {
-            $body['query']['bool']['must'][] = ['term' => ['category' => $params['category']]];
+            $body['query']['bool']['must'][] = ['term' => ['category.keyword' => $params['category']]];
         }
 
         if (! empty($params['status'])) {
-            $body['query']['bool']['must'][] = ['term' => ['status' => $params['status']]];
+            $body['query']['bool']['must'][] = ['term' => ['status.keyword' => $params['status']]];
         }
 
         // Price range
@@ -77,6 +79,23 @@ class ElasticsearchService
                 $range['lte'] = (float) $params['max_price'];
             }
             $body['query']['bool']['must'][] = ['range' => ['price' => $range]];
+        }
+
+        // Additional searchable/filterable fields: sku, name, description, price, category, status, created_at
+        // Allow filtering by sku exact match
+        if (! empty($params['sku'])) {
+            $body['query']['bool']['must'][] = ['term' => ['sku.keyword' => $params['sku']]];
+        }
+
+        // Allow filtering by name exact (keyword) or as match
+        if (! empty($params['name'])) {
+            // use match for partial/name text search
+            $body['query']['bool']['must'][] = ['match' => ['name' => $params['name']]];
+        }
+
+        if (! empty($params['created_at'])) {
+            // expect created_at as exact date or range string; try exact match
+            $body['query']['bool']['must'][] = ['term' => ['created_at' => $params['created_at']]];
         }
 
         $sortField = $params['sort'] ?? 'created_at';

@@ -10,5 +10,8 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
+// Upload image for product
+Route::post('/products/{id}/image', [ProductController::class, 'uploadImage']);
+
 // Search endpoint (Elasticsearch)
 Route::get('/search/products', [ProductController::class, 'search']);

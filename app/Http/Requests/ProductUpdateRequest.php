@@ -29,7 +29,6 @@ class ProductUpdateRequest extends FormRequest
             'price' => ['required', 'numeric', 'gt:0'],
             'category' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
-            'image_path' => ['nullable', 'image', 'max:2048'], // Max 2MB
         ];
     }
 }

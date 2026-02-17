@@ -16,7 +16,11 @@ class ProductObserver
         SyncProductToIndex::dispatch($product, 'index');
         // invalidate caches
         Cache::forget("product:{$product->id}");
-        Cache::tags(['products_search'])->flush();
+        try {
+            Cache::tags(['products_search'])->flush();
+        } catch (\BadMethodCallException $e) {
+            // cache store doesn't support tagging; ignore
+        }
     }
 
     /**
@@ -27,7 +31,11 @@ class ProductObserver
         SyncProductToIndex::dispatch($product, 'update');
         // invalidate caches
         Cache::forget("product:{$product->id}");
-        Cache::tags(['products_search'])->flush();
+        try {
+            Cache::tags(['products_search'])->flush();
+        } catch (\BadMethodCallException $e) {
+            // cache store doesn't support tagging; ignore
+        }
     }
 
     /**
@@ -38,6 +46,10 @@ class ProductObserver
         SyncProductToIndex::dispatch($product->id, 'delete');
         // invalidate caches
         Cache::forget("product:{$product->id}");
-        Cache::tags(['products_search'])->flush();
+        try {
+            Cache::tags(['products_search'])->flush();
+        } catch (\BadMethodCallException $e) {
+            // cache store doesn't support tagging; ignore
+        }
     }
 }
