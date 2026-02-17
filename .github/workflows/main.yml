@@ -27,5 +27,5 @@ jobs:
 
             docker system prune -f
 
-            docker-compose exec app composer install
-            docker-compose exec app php artisan migrate
+            docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+            docker-compose exec -T app php artisan migrate --force
