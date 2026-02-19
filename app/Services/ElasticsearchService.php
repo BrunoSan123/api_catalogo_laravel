@@ -13,6 +13,7 @@ class ElasticsearchService
     {
         $hosts = config('elasticsearch.hosts') ?? env('ELASTICSEARCH_HOSTS', 'http://elasticsearch:9200');
         $this->client = ClientBuilder::create()->setHosts(is_array($hosts) ? $hosts : [$hosts])->build();
+        // comentário teste para commit
     }
 
     public function indexProduct(Product $product): void
