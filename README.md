@@ -197,8 +197,3 @@ curl -s http://elasticsearch:9200/_cluster/health | jq '.'
 
 ---
 
-## Sugestões e próximos passos
-
-- Padronizar formato de erros (por exemplo: `{ "error": "mensagem", "code": "..." }`).
-- Adicionar seeders de produto com dados de demonstração.
-- Documentar o processo de CI para builds e testes end-to-end.

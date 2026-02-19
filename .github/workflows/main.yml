@@ -1,0 +1,31 @@
+name: Deploy Laravel API
+
+on:
+  push:
+    branches:
+      - main   # ou master, dependendo da sua branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy na EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/api_catalogo_laravel
+
+            git pull origin main
+
+            docker-compose down
+            docker-compose build --no-cache
+            docker-compose up -d
+
+            docker system prune -f
+
+            docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+            docker-compose exec -T app php artisan migrate --force
